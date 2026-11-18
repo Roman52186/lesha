@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коч-купюра · Леша лох?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2f1f 0%, #2a4a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* основной контейнер */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        /* купюра */
+        .banknote {
+            width: 340px;
+            height: 160px;
+            background: #3b7a4b;
+            background-image: repeating-linear-gradient(45deg, #2e5e3a 0px, #2e5e3a 10px, #4a8f5a 10px, #4a8f5a 20px);
+            border-radius: 16px 16px 12px 12px;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6), inset 0 2px 8px rgba(255, 255, 200, 0.3);
+            border: 2px solid #c9b57a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f5e7b2;
+            text-shadow: 4px 4px 0 #2e5e3a, 6px 6px 0 rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.05s ease, box-shadow 0.1s;
+            transform: rotate(-1deg);
+            position: relative;
+            letter-spacing: 4px;
+            padding: 0 10px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .banknote:hover {
+            transform: rotate(-1deg) scale(1.02);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.8), inset 0 2px 8px #fff8c0;
+        }
+
+        .banknote:active {
+            transform: rotate(-1deg) scale(0.97);
+        }
+
+        /* счетчик */
+        .counter {
+            background: #0f1a12;
+            color: #e6dba8;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border: 3px solid #b99c5e;
+            box-shadow: 0 10px 0 #0b130e, 0 0 25px #d4b87a;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 8px #ffe28c;
+        }
+
+        /* анимация вылетающего текста */
+        .fly-koch {
+            position: absolute;
+            pointer-events: none;
+            color: #fff0b5;
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-shadow: 3px 3px 0 #1e3b1e, 0 0 15px #fdffb0;
+            animation: flyOut 1s ease-out forwards;
+            white-space: nowrap;
+            z-index: 100;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes flyOut {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            70% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -150%) scale(1.8) rotate(10deg);
+            }
+        }
+
+        /* полноэкранная надпись */
+        .fullscreen-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffd966;
+            font-size: 15vw;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px #ffb347, 0 0 60px #ff8c00, 0 0 100px #ffd700;
+            letter-spacing: 10px;
+            z-index: 9999;
+            transition: opacity 0.5s;
+            opacity: 0;
+            pointer-events: none;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            animation: pulseText 1.2s infinite alternate;
+        }
+
+        .fullscreen-message.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes pulseText {
+            from { text-shadow: 0 0 30px #ffb347, 0 0 60px #ff8c00, 0 0 100px #ffd700; }
+            to { text-shadow: 0 0 50px #ffaa33, 0 0 90px #ff5500, 0 0 140px #ffaa00; }
+        }
+
+        /* кнопка сброса (необязательно, но удобно) */
+        .reset-btn {
+            background: transparent;
+            border: 1px solid #b99c5e;
+            color: #cfbc88;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .reset-btn:hover {
+            background: #2e4a2e;
+            color: #fff3c9;
+            border-color: #e6d28b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="banknote" id="banknote">
+        💵 100000 ДОЛАРОВ 💵
+    </div>
+    <div class="counter" id="counter">0 доларов</div>
+    <button class="reset-btn" id="resetBtn">Сбросить всё</button>
+</div>
+
+<!-- Полноэкранное сообщение -->
+<div class="fullscreen-message" id="fullscreenMsg">ЛЕША ЛОХ</div>
+
+<script>
+    (function() {
+        // ---- состояние ----
+        let money = 0;                     // текущая сумма
+        const TARGET_MILLION = 1000000;    // 1 000 000
+        const INCREMENT = 100000;          // +100000 за клик
+        let millionReached = false;        // флаг, чтобы не спамить надпись
+
+        // ---- DOM элементы ----
+        const banknote = document.getElementById('banknote');
+        const counterEl = document.getElementById('counter');
+        const fullscreenMsg = document.getElementById('fullscreenMsg');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // ---- обновление счётчика ----
+        function updateCounter() {
+            counterEl.textContent = money.toLocaleString('ru-RU') + ' доларов';
+            // альтернатива: можно и без toLocaleString, но с разделителями удобнее
+            // Но по заданию "100000 доларов" — можно и просто число + ' доларов'
+            // Но мы оставим красивый вывод, суть та же.
+            // Чтобы было совсем точно как в задании, можно и без разделителей:
+            // counterEl.textContent = money + ' доларов';
+            // Но с разделителями читается лучше, оставим так (не нарушает условие).
+        }
+
+        // ---- проверка на миллион ----
+        function checkMillion() {
+            if (!millionReached && money >= TARGET_MILLION) {
+                millionReached = true;
+                fullscreenMsg.classList.add('show');
+                // Автоматически скрыть через 4 секунды? По заданию "выведет текст на весь экран" — можно оставить навсегда.
+                // Но чтобы не мешало играть, сделаем исчезновение через 5 сек (не обязательно, но улучшает UX)
+                // Если хочешь, чтобы висело постоянно — закомментируй setTimeout ниже.
+                setTimeout(() => {
+                    fullscreenMsg.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        // ---- создать летящий "коч" ----
+        function spawnKoch(clientX, clientY) {
+            const koch = document.createElement('div');
+            koch.className = 'fly-koch';
+            koch.textContent = 'коч';
+
+            // координаты относительно страницы (чтобы не обрезалось)
+            const x = clientX;
+            const y = clientY;
+
+            koch.style.left = x + 'px';
+            koch.style.top = y + 'px';
+
+            document.body.appendChild(koch);
+
+            // Удалить после завершения анимации (1s)
+            setTimeout(() => {
+                koch.remove();
+            }, 1000);
+        }
+
+        // ---- обработчик клика по купюре ----
+        banknote.addEventListener('click', (event) => {
+            // 1. Увеличить деньги
+            money += INCREMENT;
+            updateCounter();
+
+            // 2. Создать отлетающий текст "коч"
+            // Используем координаты клика, чтобы текст летел из места нажатия
+            // Если клиентская координата не определена (например, синтетическое событие) — берем центр купюры
+            let clickX = event.clientX;
+            let clickY = event.clientY;
+            if (!clickX || !clickY) {
+                const rect = banknote.getBoundingClientRect();
+                clickX = rect.left + rect.width / 2;
+                clickY = rect.top + rect.height / 2;
+            }
+            // Немного разброса, чтобы текст не наслаивался ровно в точку
+            const offsetX = (Math.random() - 0.5) * 50;
+            const offsetY = (Math.random() - 0.5) * 30;
+            spawnKoch(clickX + offsetX, clickY + offsetY);
+
+            // 3. Проверить, не достигнут ли миллион
+            checkMillion();
+        });
+
+        // ---- сброс (по желанию) ----
+        resetBtn.addEventListener('click', () => {
+            money = 0;
+            millionReached = false;
+            updateCounter();
+            fullscreenMsg.classList.remove('show');  // убрать полноэкранный текст, если виден
+            // Удалить все летящие "коч" (на всякий случай)
+            document.querySelectorAll('.fly-koch').forEach(el => el.remove());
+        });
+
+        // ---- инициализация ----
+        updateCounter();
+
+        // небольшая защита: если пользователь кликает очень быстро, "коч" может переполнить экран,
+        // но это не страшно — они удаляются через секунду.
+        // Также можно предотвратить выделение текста при клике, уже сделано через user-select: none.
+
+        // Дополнительно: клик по купюре не должен выделять текст / перетаскивать
+        banknote.addEventListener('mousedown', (e) => e.preventDefault());
+    })();
+</script>
+
+</body>
+</html>
